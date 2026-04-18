@@ -1,0 +1,22 @@
+{
+  "name": "veevasample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test":              "playwright test",
+    "test:chromium":     "playwright test --project=chromium",
+    "test:cart-backend": "playwright test tests/cart-backend.spec.ts --project=chromium",
+    "test:e2e":          "playwright test tests/shopping-cart.spec.ts",
+    "report":            "playwright show-report",
+    "codegen":           "playwright codegen https://www.saucedemo.com"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  }
+}
