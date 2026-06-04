@@ -26,6 +26,10 @@ jobs:
       run: npx playwright test
       env:
         TEST_ENV: ci
+        # In the Playwright container, GitHub Actions sets HOME=/github/home (owned
+        # by a different user), which makes Firefox refuse to launch. Point HOME at
+        # the container's root home so all browsers start.
+        HOME: /root
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
