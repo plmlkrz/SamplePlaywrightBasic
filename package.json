@@ -1,22 +1,34 @@
 {
-  "name": "veevasample",
+  "name": "playwright-qa-framework",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A self-contained Playwright automation framework with its own demo web app, for QA engineers learning end-to-end testing.",
+  "main": "app/server.ts",
   "scripts": {
-    "test":              "playwright test",
-    "test:chromium":     "playwright test --project=chromium",
-    "test:cart-backend": "playwright test tests/cart-backend.spec.ts --project=chromium",
-    "test:e2e":          "playwright test tests/shopping-cart.spec.ts",
-    "report":            "playwright show-report",
-    "codegen":           "playwright codegen https://www.saucedemo.com"
+    "app:start":     "tsx app/server.ts",
+    "app:dev":       "tsx watch app/server.ts",
+    "test":          "playwright test",
+    "test:smoke":    "playwright test --grep @smoke",
+    "test:e2e":      "playwright test tests/e2e",
+    "test:api":      "playwright test tests/api",
+    "test:unit":     "playwright test tests/unit",
+    "test:ui":       "playwright test tests/ui-patterns",
+    "test:a11y":     "playwright test tests/a11y",
+    "test:chromium": "playwright test --project=chromium",
+    "report":        "playwright show-report",
+    "codegen":       "playwright codegen http://localhost:3100"
   },
-  "keywords": [],
+  "keywords": ["playwright", "qa", "automation", "testing", "e2e", "page-object-model"],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
     "@playwright/test": "^1.59.1",
-    "@types/node": "^25.6.0"
+    "@types/express": "^4.17.21",
+    "@types/node": "^25.6.0",
+    "tsx": "^4.19.2"
   }
 }

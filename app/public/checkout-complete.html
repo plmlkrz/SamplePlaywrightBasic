@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Complete · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header">
+    <p class="app-title">Demo Store</p>
+  </header>
+
+  <main id="main">
+    <h1 class="complete-header">Thank you for your order!</h1>
+    <p data-test="complete-text">Your order has been dispatched and will arrive soon.</p>
+    <p><a class="btn" href="/inventory.html">Back Home</a></p>
+  </main>
+
+  <script src="/js/store.js"></script>
+  <script>Store.requireAuth();</script>
+</body>
+</html>

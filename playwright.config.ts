@@ -1,79 +1,55 @@
 import { defineConfig, devices } from '@playwright/test';
+import { getEnv } from './config/env';
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-/**
+ * Playwright configuration.
+ *
+ * Everything environment-specific (base URL, timeouts, retries) comes from the
+ * env profile in config/env.ts — select one with TEST_ENV (defaults to `local`).
+ * The demo app is started automatically by the `webServer` block, so a learner
+ * only ever needs `npm test`.
+ *
  * See https://playwright.dev/docs/test-configuration.
  */
+const env = getEnv();
+
 export default defineConfig({
   testDir: './tests',
-  /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  retries: process.env.CI ? env.retries : 0,
+  /* CI runs serially; locally cap at 4 so a single dev-server SUT (and the dev
+     machine) isn't oversubscribed — keeps runs reliable without losing parallelism. */
+  workers: process.env.CI ? 1 : 4,
+  timeout: env.testTimeout,
+
+  /* Console summary + rich HTML report (open with `npm run report`). */
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+  ],
+
   use: {
-    baseURL: 'https://www.saucedemo.com',
+    baseURL: env.baseURL,
+    actionTimeout: env.actionTimeout,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 10_000,
   },
 
-  /* Configure projects for major browsers */
   projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit',   use: { ...devices['Desktop Safari'] } },
+    /* Mobile viewport — useful for the accessibility/touch-target checks. */
+    { name: 'mobile-chrome', use: { ...devices['Pixel 5'] } },
   ],
 
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  /* Start the local demo store before the tests run. */
+  webServer: {
+    command: 'npm run app:start',
+    url: env.baseURL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
 });

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modal Dialog · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header"><p class="app-title">Demo Store</p></header>
+
+  <main id="main">
+    <h1>Modal Dialog</h1>
+    <p>Open the dialog, then confirm or cancel. The result is announced below.</p>
+
+    <p><button data-test="open-modal" type="button">Delete account</button></p>
+    <p data-test="result" role="status"></p>
+  </main>
+
+  <div class="modal-backdrop" data-test="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" data-test="modal">
+      <h2 id="modal-title">Are you sure?</h2>
+      <p>This action cannot be undone.</p>
+      <p>
+        <button class="secondary" data-test="cancel-modal" type="button">Cancel</button>
+        <button data-test="confirm" type="button">Yes, delete</button>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const backdrop = document.querySelector('[data-test="modal-backdrop"]');
+    const openBtn = document.querySelector('[data-test="open-modal"]');
+    const confirmBtn = document.querySelector('[data-test="confirm"]');
+    const cancelBtn = document.querySelector('[data-test="cancel-modal"]');
+    const result = document.querySelector('[data-test="result"]');
+
+    function open() {
+      backdrop.hidden = false;
+      confirmBtn.focus();          // move focus into the dialog
+      document.addEventListener('keydown', onKeydown);
+    }
+    function close() {
+      backdrop.hidden = true;
+      document.removeEventListener('keydown', onKeydown);
+      openBtn.focus();             // return focus to the trigger
+    }
+    function onKeydown(e) {
+      if (e.key === 'Escape') { result.textContent = 'Cancelled'; close(); }
+    }
+
+    openBtn.addEventListener('click', open);
+    cancelBtn.addEventListener('click', () => { result.textContent = 'Cancelled'; close(); });
+    confirmBtn.addEventListener('click', () => { result.textContent = 'Account deleted'; close(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header">
+    <p class="app-title">Demo Store</p>
+    <nav class="cart-link-wrap" aria-label="Cart">
+      <a class="shopping_cart_link" href="/cart.html" aria-label="Cart">
+        🛒 <span class="shopping_cart_badge" hidden></span>
+      </a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <h1>Your Cart</h1>
+    <div id="cart-list" aria-busy="true">Loading cart…</div>
+
+    <p>
+      <button class="secondary" data-test="continue-shopping" type="button">Continue Shopping</button>
+      <button data-test="checkout" type="button">Checkout</button>
+    </p>
+  </main>
+
+  <script src="/js/store.js"></script>
+  <script>
+    if (Store.requireAuth()) {
+      let products = [];   // fetched once on load; removals re-render from memory
+
+      function render() {
+        const cart = Store.getCart();
+        const byIndex = new Map(products.map((p) => [p.cartIndex, p]));
+        const list = document.getElementById('cart-list');
+        list.removeAttribute('aria-busy');
+
+        if (cart.length === 0) {
+          list.innerHTML = '<p data-test="empty-cart">Your cart is empty.</p>';
+          Store.renderBadge();
+          return;
+        }
+
+        list.innerHTML = cart.map((index) => {
+          const p = byIndex.get(index);
+          if (!p) return '';
+          return `
+            <div class="cart_item">
+              <span class="cart_quantity">1</span>
+              <span class="inventory_item_name">${p.name}</span>
+              <span class="inventory_item_price">${Store.formatPrice(p.price)}</span>
+              <button id="remove-${p.id}" class="secondary" data-index="${p.cartIndex}" type="button">Remove</button>
+            </div>`;
+        }).join('');
+        Store.renderBadge();
+      }
+
+      document.getElementById('cart-list').addEventListener('click', (event) => {
+        const btn = event.target.closest('button');
+        if (!btn) return;
+        Store.removeFromCart(Number(btn.dataset.index));
+        render();                       // synchronous — no fetch round-trip
+      });
+
+      document.querySelector('[data-test="continue-shopping"]').addEventListener('click', () => {
+        window.location.assign('/inventory.html');
+      });
+
+      document.querySelector('[data-test="checkout"]').addEventListener('click', () => {
+        window.location.assign('/checkout-step-one.html');
+      });
+
+      Store.fetchProducts().then((data) => { products = data; render(); });
+    }
+  </script>
+</body>
+</html>

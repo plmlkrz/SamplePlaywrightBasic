@@ -1,9 +1,22 @@
+/**
+ * Domain model for the demo store's shopping cart.
+ *
+ * This class is deliberately framework-agnostic: it has no dependency on
+ * Playwright or the browser. That makes it a perfect subject for fast,
+ * browser-less *unit* tests (see tests/unit/cart-backend.spec.ts) and keeps
+ * the cart rules in one place that both the demo app and tests can reason about.
+ */
+
 export interface Product {
   id: string;
   name: string;
   price: number;
   description: string;
-  /** SauceDemo's internal numeric id used in localStorage cart-contents */
+  /**
+   * The product's position in the catalog (0-based). The demo store persists a
+   * cart as a JSON array of these indices under the localStorage key
+   * `cart-contents`, which is what the API/hybrid tests seed directly.
+   */
   cartIndex: number;
 }
 

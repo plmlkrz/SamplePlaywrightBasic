@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forms · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header"><p class="app-title">Demo Store</p></header>
+
+  <main id="main">
+    <h1>Create an Account</h1>
+
+    <p data-test="success" class="error" role="status" style="color: var(--primary)" hidden>
+      Account created successfully!
+    </p>
+
+    <form id="signup-form" novalidate>
+      <label for="fullName">Full name</label>
+      <input id="fullName" data-test="fullName" type="text" />
+      <p class="field-error" data-test="error-fullName" hidden></p>
+
+      <label for="email">Email</label>
+      <input id="email" data-test="email" type="email" />
+      <p class="field-error" data-test="error-email" hidden></p>
+
+      <label for="password">Password (min 8 characters)</label>
+      <input id="password" data-test="password" type="password" />
+      <p class="field-error" data-test="error-password" hidden></p>
+
+      <label for="country">Country</label>
+      <select id="country" data-test="country">
+        <option value="">Select…</option>
+        <option value="us">United States</option>
+        <option value="ca">Canada</option>
+        <option value="uk">United Kingdom</option>
+      </select>
+      <p class="field-error" data-test="error-country" hidden></p>
+
+      <p>
+        <label style="display:inline-flex; gap:8px; align-items:center; font-weight:400;">
+          <input id="terms" data-test="terms" type="checkbox" style="width:auto;min-height:auto;" />
+          I agree to the terms
+        </label>
+      </p>
+      <p class="field-error" data-test="error-terms" hidden></p>
+
+      <p><button data-test="submit" type="submit">Create account</button></p>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('signup-form');
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function setError(field, message) {
+      const el = document.querySelector(`[data-test="error-${field}"]`);
+      if (message) { el.textContent = message; el.hidden = false; }
+      else { el.textContent = ''; el.hidden = true; }
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      document.querySelector('[data-test="success"]').hidden = true;
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const country = document.getElementById('country').value;
+      const terms = document.getElementById('terms').checked;
+
+      let valid = true;
+      setError('fullName', fullName ? '' : 'Full name is required');
+      if (!fullName) valid = false;
+
+      if (!email) { setError('email', 'Email is required'); valid = false; }
+      else if (!EMAIL_RE.test(email)) { setError('email', 'Enter a valid email address'); valid = false; }
+      else setError('email', '');
+
+      if (!password) { setError('password', 'Password is required'); valid = false; }
+      else if (password.length < 8) { setError('password', 'Password must be at least 8 characters'); valid = false; }
+      else setError('password', '');
+
+      setError('country', country ? '' : 'Please select a country');
+      if (!country) valid = false;
+
+      setError('terms', terms ? '' : 'You must agree to the terms');
+      if (!terms) valid = false;
+
+      if (valid) {
+        document.querySelector('[data-test="success"]').hidden = false;
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>

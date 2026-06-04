@@ -1,0 +1,162 @@
+/* Demo store styles — clean, semantic, and accessible.
+   Contrast ratios and focus styles are intentional teaching examples for the
+   accessibility specs. */
+
+:root {
+  --bg: #ffffff;
+  --surface: #f4f6f8;
+  --border: #c7ced6;
+  --text: #1b2733;        /* ~13:1 on white */
+  --muted: #54616e;       /* ~7:1 on white */
+  --primary: #0b6b3a;     /* accessible green */
+  --primary-text: #ffffff;
+  --danger: #b00020;
+  --focus: #1a73e8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+}
+
+a { color: var(--primary); }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--text);
+  color: #fff;
+  padding: 8px 12px;
+  z-index: 100;
+}
+.skip-link:focus { left: 8px; }
+
+header.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--text);
+  color: #fff;
+}
+header.app-header a { color: #fff; }
+.app-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
+
+.cart-link-wrap { position: relative; display: inline-flex; align-items: center; }
+.shopping_cart_link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
+  text-decoration: none;
+}
+.shopping_cart_badge {
+  background: var(--danger);
+  color: #fff;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+main { max-width: 960px; margin: 0 auto; padding: 24px 20px 64px; }
+h1 { font-size: 1.6rem; }
+
+button, .btn {
+  font: inherit;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: var(--primary-text);
+  cursor: pointer;
+}
+button.secondary, .btn.secondary {
+  background: #fff;
+  color: var(--text);
+  border-color: var(--border);
+}
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+label { display: block; font-weight: 600; margin: 12px 0 4px; }
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], select, textarea {
+  font: inherit;
+  width: 100%;
+  max-width: 340px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.error {
+  color: var(--danger);
+  font-weight: 600;
+  margin: 12px 0;
+}
+.field-error { color: var(--danger); font-size: 0.9rem; margin-top: 4px; }
+
+/* Inventory grid */
+.inventory_list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.inventory_item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+}
+.inventory_item_name { font-size: 1.1rem; font-weight: 700; margin: 0 0 6px; }
+.inventory_item_desc { color: var(--muted); flex: 1; }
+.inventory_item_price { font-weight: 700; margin: 12px 0; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+
+/* Cart + checkout summary */
+.cart_item, .summary_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+.cart_quantity { font-weight: 700; }
+.summary_subtotal_label, .summary_tax_label, .summary_total_label { font-weight: 600; }
+.summary_total_label { font-size: 1.1rem; }
+.complete-header { color: var(--primary); font-size: 1.3rem; }
+
+/* Data table */
+table.data-table { border-collapse: collapse; width: 100%; }
+table.data-table th, table.data-table td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+table.data-table th button { background: none; border: none; color: var(--text); font-weight: 700; padding: 0; min-height: auto; cursor: pointer; }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-backdrop[hidden] { display: none; }
+.modal {
+  background: #fff; border-radius: 8px; padding: 24px; max-width: 420px; width: 90%;
+}
+
+/* Dynamic loading */
+.spinner[hidden] { display: none; }
+.spinner { font-weight: 600; color: var(--muted); }
+
+.page-list { line-height: 2; }
