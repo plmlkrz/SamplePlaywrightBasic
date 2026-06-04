@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Table · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header"><p class="app-title">Demo Store</p></header>
+
+  <main id="main">
+    <h1>Team Directory</h1>
+
+    <p>
+      <label for="filter">Filter</label>
+      <input id="filter" data-test="filter" type="text" placeholder="Type to filter…" />
+    </p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th scope="col"><button data-test="sort-name" type="button">Name</button></th>
+          <th scope="col"><button data-test="sort-role" type="button">Role</button></th>
+          <th scope="col"><button data-test="sort-score" type="button">Score</button></th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+
+    <p>
+      <button class="secondary" data-test="prev-page" type="button">Previous</button>
+      <span data-test="page-info"></span>
+      <button class="secondary" data-test="next-page" type="button">Next</button>
+    </p>
+  </main>
+
+  <script>
+    const ROWS = [
+      { name: 'Ada Lovelace', role: 'Engineer', score: 91 },
+      { name: 'Grace Hopper', role: 'Engineer', score: 99 },
+      { name: 'Alan Turing', role: 'Researcher', score: 97 },
+      { name: 'Katherine Johnson', role: 'Analyst', score: 95 },
+      { name: 'Margaret Hamilton', role: 'Engineer', score: 96 },
+      { name: 'Barbara Liskov', role: 'Researcher', score: 93 },
+      { name: 'Donald Knuth', role: 'Researcher', score: 98 },
+      { name: 'Linus Torvalds', role: 'Engineer', score: 90 },
+      { name: 'Tim Berners-Lee', role: 'Architect', score: 94 },
+      { name: 'Edsger Dijkstra', role: 'Researcher', score: 92 },
+      { name: 'Radia Perlman', role: 'Architect', score: 89 },
+      { name: 'Vint Cerf', role: 'Architect', score: 88 },
+    ];
+    const PAGE_SIZE = 5;
+
+    let filterText = '';
+    let sortKey = null;
+    let sortDir = 1;
+    let page = 0;
+
+    function filtered() {
+      const f = filterText.toLowerCase();
+      let rows = ROWS.filter((r) =>
+        r.name.toLowerCase().includes(f) || r.role.toLowerCase().includes(f)
+      );
+      if (sortKey) {
+        rows = [...rows].sort((a, b) => {
+          if (typeof a[sortKey] === 'number') return (a[sortKey] - b[sortKey]) * sortDir;
+          return a[sortKey].localeCompare(b[sortKey]) * sortDir;
+        });
+      }
+      return rows;
+    }
+
+    function render() {
+      const rows = filtered();
+      const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+      if (page >= pageCount) page = pageCount - 1;
+      const start = page * PAGE_SIZE;
+      const pageRows = rows.slice(start, start + PAGE_SIZE);
+
+      document.getElementById('table-body').innerHTML = pageRows.map((r) => `
+        <tr>
+          <td class="cell-name">${r.name}</td>
+          <td class="cell-role">${r.role}</td>
+          <td class="cell-score">${r.score}</td>
+        </tr>`).join('');
+
+      document.querySelector('[data-test="page-info"]').textContent =
+        `Page ${page + 1} of ${pageCount} (${rows.length} results)`;
+      document.querySelector('[data-test="prev-page"]').disabled = page === 0;
+      document.querySelector('[data-test="next-page"]').disabled = page >= pageCount - 1;
+    }
+
+    function setSort(key) {
+      if (sortKey === key) sortDir = -sortDir;
+      else { sortKey = key; sortDir = 1; }
+      page = 0;
+      render();
+    }
+
+    document.getElementById('filter').addEventListener('input', (e) => {
+      filterText = e.target.value;
+      page = 0;
+      render();
+    });
+    document.querySelector('[data-test="sort-name"]').addEventListener('click', () => setSort('name'));
+    document.querySelector('[data-test="sort-role"]').addEventListener('click', () => setSort('role'));
+    document.querySelector('[data-test="sort-score"]').addEventListener('click', () => setSort('score'));
+    document.querySelector('[data-test="prev-page"]').addEventListener('click', () => { if (page > 0) { page--; render(); } });
+    document.querySelector('[data-test="next-page"]').addEventListener('click', () => { page++; render(); });
+
+    render();
+  </script>
+</body>
+</html>

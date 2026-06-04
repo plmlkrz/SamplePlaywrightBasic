@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Upload · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header"><p class="app-title">Demo Store</p></header>
+
+  <main id="main">
+    <h1>File Upload</h1>
+    <p>Choose a file, then upload it. (The file is read in the browser — nothing leaves your machine.)</p>
+
+    <label for="file">Choose a file</label>
+    <input id="file" data-test="file-input" type="file" />
+    <p data-test="file-name"></p>
+
+    <p><button data-test="upload" type="button" disabled>Upload</button></p>
+    <p data-test="upload-success" class="error" role="status" style="color: var(--primary)" hidden></p>
+  </main>
+
+  <script>
+    const input = document.querySelector('[data-test="file-input"]');
+    const nameEl = document.querySelector('[data-test="file-name"]');
+    const uploadBtn = document.querySelector('[data-test="upload"]');
+    const success = document.querySelector('[data-test="upload-success"]');
+
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      success.hidden = true;
+      if (file) {
+        nameEl.textContent = `Selected: ${file.name} (${file.size} bytes)`;
+        uploadBtn.disabled = false;
+      } else {
+        nameEl.textContent = '';
+        uploadBtn.disabled = true;
+      }
+    });
+
+    uploadBtn.addEventListener('click', () => {
+      const file = input.files[0];
+      if (!file) return;
+      success.textContent = `Uploaded ${file.name} successfully!`;
+      success.hidden = false;
+    });
+  </script>
+</body>
+</html>

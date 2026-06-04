@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout: Information · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header">
+    <p class="app-title">Demo Store</p>
+  </header>
+
+  <main id="main">
+    <h1>Checkout: Your Information</h1>
+    <form id="info-form" novalidate>
+      <div role="alert" data-test="error" class="error" id="error" hidden></div>
+
+      <label for="firstName">First Name</label>
+      <input id="firstName" data-test="firstName" type="text" autocomplete="given-name" />
+
+      <label for="lastName">Last Name</label>
+      <input id="lastName" data-test="lastName" type="text" autocomplete="family-name" />
+
+      <label for="postalCode">Zip / Postal Code</label>
+      <input id="postalCode" data-test="postalCode" type="text" autocomplete="postal-code" />
+
+      <p>
+        <button class="secondary" data-test="cancel" type="button">Cancel</button>
+        <button data-test="continue" type="submit">Continue</button>
+      </p>
+    </form>
+  </main>
+
+  <script src="/js/store.js"></script>
+  <script>
+    if (Store.requireAuth()) {
+      const form = document.getElementById('info-form');
+      const errorEl = document.getElementById('error');
+
+      document.querySelector('[data-test="cancel"]').addEventListener('click', () => {
+        window.location.assign('/cart.html');
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        errorEl.hidden = true;
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const postalCode = document.getElementById('postalCode').value.trim();
+
+        let message = '';
+        if (!firstName) message = 'Error: First Name is required';
+        else if (!lastName) message = 'Error: Last Name is required';
+        else if (!postalCode) message = 'Error: Postal Code is required';
+
+        if (message) {
+          errorEl.textContent = message;
+          errorEl.hidden = false;
+          return;
+        }
+
+        sessionStorage.setItem('checkout-info', JSON.stringify({ firstName, lastName, postalCode }));
+        window.location.assign('/checkout-step-two.html');
+      });
+    }
+  </script>
+</body>
+</html>

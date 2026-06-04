@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <main id="main">
+    <h1>Demo Store</h1>
+    <p>Sign in to start shopping. Try <code>standard_user</code> / <code>secret_sauce</code>.</p>
+
+    <form id="login-form" novalidate>
+      <div role="alert" data-test="error" class="error" id="error" hidden></div>
+
+      <label for="user-name">Username</label>
+      <input id="user-name" name="username" type="text" autocomplete="username" />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" />
+
+      <p>
+        <button id="login-button" type="submit">Login</button>
+      </p>
+    </form>
+  </main>
+
+  <script src="/js/store.js"></script>
+  <script>
+    const form = document.getElementById('login-form');
+    const errorEl = document.getElementById('error');
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.hidden = false;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      errorEl.hidden = true;
+
+      const username = document.getElementById('user-name').value;
+      const password = document.getElementById('password').value;
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        Store.setLoggedIn(data.username);
+        window.location.assign('/inventory.html');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showError(data.error || 'Login failed');
+      }
+    });
+  </script>
+</body>
+</html>

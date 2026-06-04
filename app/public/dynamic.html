@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Loading · Demo Store</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header"><p class="app-title">Demo Store</p></header>
+
+  <main id="main">
+    <h1>Dynamic Loading</h1>
+    <p>Click the button to load content after a short delay — the classic
+       "wait for the spinner to disappear" pattern.</p>
+
+    <p><button data-test="load" type="button">Load content</button></p>
+
+    <p class="spinner" data-test="spinner" role="status" hidden>Loading…</p>
+    <div data-test="content" hidden>
+      <h2>Loaded!</h2>
+      <p data-test="content-text">This content appeared asynchronously.</p>
+      <ul data-test="product-names"></ul>
+    </div>
+  </main>
+
+  <script src="/js/store.js"></script>
+  <script>
+    const loadBtn = document.querySelector('[data-test="load"]');
+    const spinner = document.querySelector('[data-test="spinner"]');
+    const content = document.querySelector('[data-test="content"]');
+
+    loadBtn.addEventListener('click', async () => {
+      content.hidden = true;
+      spinner.hidden = false;
+      loadBtn.disabled = true;
+
+      // Simulate a network round-trip, then load real data from the API.
+      await new Promise((r) => setTimeout(r, 800));
+      const products = await Store.fetchProducts();
+
+      document.querySelector('[data-test="product-names"]').innerHTML =
+        products.map((p) => `<li>${p.name}</li>`).join('');
+
+      spinner.hidden = true;
+      content.hidden = false;
+      loadBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>

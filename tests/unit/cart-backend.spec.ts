@@ -1,21 +1,25 @@
+/**
+ * Backend UNIT tests for the ShoppingCart domain model — no browser involved.
+ *
+ * These run in milliseconds and prove the cart *rules* in isolation. Pairing fast
+ * unit tests with slower end-to-end tests is a core QA strategy: catch logic bugs
+ * here, reserve E2E for user-flow coverage.
+ */
+
 import { test, expect } from '@playwright/test';
-import { ShoppingCart } from '../src/cart';
-import { PRODUCTS, productByName } from '../src/data/products';
+import { ShoppingCart } from '../../src/cart';
+import { PRODUCTS, productByName } from '../../src/data/products';
 
-const backpack  = productByName('Sauce Labs Backpack');        // $29.99
-const bikeLight = productByName('Sauce Labs Bike Light');      // $9.99
-const onesie    = productByName('Sauce Labs Onesie');          // $7.99
+const backpack  = productByName('Trailblazer Backpack');  // $29.99
+const bikeLight = productByName('Beacon Bike Light');      // $9.99
+const onesie    = productByName('Cozy Onesie');            // $7.99
 
-test.describe('ShoppingCart — Backend Unit Tests', () => {
+test.describe('ShoppingCart — Backend Unit Tests', { tag: '@unit' }, () => {
 
   let cart: ShoppingCart;
-
-  test.beforeEach(() => {
-    cart = new ShoppingCart();
-  });
+  test.beforeEach(() => { cart = new ShoppingCart(); });
 
   // ── Item Management ──────────────────────────────────────────────────────
-
   test('addItem: adds a single product to an empty cart', () => {
     cart.addItem(backpack);
     expect(cart.getItemCount()).toBe(1);
@@ -56,7 +60,6 @@ test.describe('ShoppingCart — Backend Unit Tests', () => {
   });
 
   // ── Totals & Counts ──────────────────────────────────────────────────────
-
   test('getTotal: returns 0 for empty cart', () => {
     expect(cart.getTotal()).toBe(0);
   });
@@ -73,7 +76,7 @@ test.describe('ShoppingCart — Backend Unit Tests', () => {
   });
 
   test('getTotal: accounts for quantity', () => {
-    cart.addItem(bikeLight, 2);  // $9.99 x2 = $19.98
+    cart.addItem(bikeLight, 2);  // $9.99 x2
     expect(cart.getTotal()).toBeCloseTo(19.98, 2);
   });
 
@@ -88,7 +91,6 @@ test.describe('ShoppingCart — Backend Unit Tests', () => {
   });
 
   // ── Retrieval ────────────────────────────────────────────────────────────
-
   test('getItems: returns empty array for empty cart', () => {
     expect(cart.getItems()).toEqual([]);
   });
@@ -107,7 +109,6 @@ test.describe('ShoppingCart — Backend Unit Tests', () => {
   });
 
   // ── Clear ────────────────────────────────────────────────────────────────
-
   test('clear: empties a populated cart', () => {
     cart.addItem(backpack);
     cart.addItem(bikeLight);
@@ -122,21 +123,17 @@ test.describe('ShoppingCart — Backend Unit Tests', () => {
   });
 
   // ── Product Data Integrity ────────────────────────────────────────────────
-
   test('PRODUCTS array contains exactly 6 products', () => {
     expect(PRODUCTS).toHaveLength(6);
   });
 
   test('all products have positive prices', () => {
-    PRODUCTS.forEach(p => {
-      expect(p.price).toBeGreaterThan(0);
-    });
+    PRODUCTS.forEach(p => expect(p.price).toBeGreaterThan(0));
   });
 
   test('all products have unique ids', () => {
     const ids = PRODUCTS.map(p => p.id);
-    const uniqueIds = new Set(ids);
-    expect(uniqueIds.size).toBe(PRODUCTS.length);
+    expect(new Set(ids).size).toBe(PRODUCTS.length);
   });
 
   test('all products have non-empty names and descriptions', () => {
